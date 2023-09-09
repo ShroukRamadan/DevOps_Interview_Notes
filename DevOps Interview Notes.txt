@@ -1,0 +1,752 @@
+1- What's diff b/w Agile and Devops ?
+ > Agile : S/W Dev Methdology that Focues on Incremental, iterative
+ > Devops : Culture that allows to the colloboration of Dev-team and operation-team
+ 
+2- Diff b/w Virtualization and Conterization ?
+ > Virtualization : Process to create Vms "Machine" that depends on HyperVisor(Baremetal-hosted) : Vagrant
+ > Conterization: Lightweight Vir technigue that enabled you make multiple Isolated App (Speed, Easy to make destroy )
+ 
+3- Diff B/W Microservices and Monlithics ?
+  > Microservices : Single Units
+  > Monlithics : Traditional Style "Fine-grained" > self contained Unit
+                                                                       
+                                                                       
+                                                                       
+                                                    #### Docker ####
+                                                                        
+4- Docker : Lightweight, Standalone, executable package that Run Apps
+ 
+5- Docker Arch:
+ 
+ > Docker client : Attach with docker cli "Interface of Docker"         > Docker daemon : Manage Objs          > Docker Registry : Store of Images and System Delivery (Public : Dockerhub - Private)
+ > Docker Image : ReadOnly templete        > Docker Container : Runnable of Docker Image         > Dockerfile : Instruction layers of Build Docker Image
+ 
+ 
+6- Dockernetwork  "Types" :
+ 
+ > Bridged: Private Network B/w Containers "Default"        > Host-only : vmnet1 "Network of your host"         > Overlay : Using in Orchestration "Multiple host"   > MacVlan : phy add
+ 
+7- Docker port mapping/F/W : EXPOSE OF Port <target-port>:<Custom-port>  apache 
+ 
+8- DockerRegistry  : Map on port "5000"
+
+9- Dockerfile "Instructions" "Layers" :
+
+ FROM  > Your BaseImage:Tag         ENTRYPOINT > Secified Command is run when Container Start "Not Change Behvior"         CMD > Secified Command is run when Container Start "Change Behvior"
+ ADD   > SRC-DEST "URL,Tar,Remote"         COPY > SRC-DEST           RUN > Execute Command           EXPOSE "Metadata not read" > Maping and take port      LABEL > Info of Image 
+ WORKDIR > mkdir + cd             
+ 
+ What is a multi-stage : make 2 FROM baseImage, one of theme depends on anohter
+ 
+ 
+10- Types of ImageTag :
+ Custom-Version: centos:8           latest : Latest version        Unique > In CI/CD     None > take latest Version
+ 
+ 11- Volume and types :
+   > Volume : persistent storage of  Data
+   > types: > mounted : dir on your machine       > bind : docker volume "/var/lib/docker/volume"            > named-volume :  on host machine when store  data
+   
+ 
+ 12-LifeCycle of DockerContainer :
+   a- pull image if not existed locally  b- create   c-Start
+   
+ 13-To remove dockerimage :   rm container and rm image             OR rm force " docker rmi -f <image>"
+ 
+ 14-How can secure your dockerfile ?        
+ >>  decreased Vulnerabilities through using a custom version and decreased layers of dockerfile and USING Scanning Tool :Trivy
+ 
+ 15- to inside conatiner : docker exec <container-id> -it bash
+ 
+ 16- to display logs of docker container : $ docker logs <container-id> 
+ 
+
+ 17-Docker compose :Run one/more container at same network and same single-host
+       depends on :        ensure Run docker container-1 before container-2
+       Services : deploy microservices in compose
+       
+ 18 - How to make archiving and decompress of dockerimage/file ?
+       $ docker save <>       archive
+       $ docker load <>       decompress
+ 
+ 
+                                               #### Kubernets####
+                                                                  
+ 1- Container Orcherstartion :  Tool that Managed your Cluster and Solve downtime  like k8s-dockerswarm-nomad
+ 
+ 2- Why go to Container Orchestration ?
+     > Multiplehost " in Docker When to make App <Container> that Have a ReSrcs over Resrcs of your host > downtime , but Orchestration Solve this problem"
+     
+ 3- Kubernetes and Features : Open Src tool that automated and managed App
+           > Scalaibity       > Self healing           > Portabaility         > Automated Rollouts and Rollback
+                      
+ 4- Kubernetes Arch : 
+       a- Control-plane "Master" : Brain of Cluster "Cluster Set of Nodes"
+        Copmonents:          1-etcd : Key value store "database" - communicate with kube-Api-server
+                             2- Kube-api_server : Recieve Reqs that what are you doing ?     - Communicate with Etcd   - deal with worker-nodes through kubelet
+                             3- KCM"Kube-Controller-manager" : Compare b/w deired state and Actual "Current" state
+                             4- Kube-Scheduler : Assigns pods of node
+                             5-CMM "Cloud Controller Manager" : link b/w your cluster into cloud-provider through API
+                             6-kubectl > Command line tool that managed cluster
+                             
+                             
+       b- Worker-nodes : clients
+               Components: 
+                      1- Kubelet "node-agent": Agent that running on each node and communicate with control-plane components -
+                                               Recieve pod definations - Monitor ReSrcs and Healthcheck
+                      2-CR"Container-Runtime" : Through CRI Docker/containerd-CRI-O
+                      3-Kube-proxy : Network Agent on each node       F/W conn Reqs to pods   -Responsible of TCP/UDP
+                      4-Addons : DNS-Dashboard - Monitoring- Logging
+                      
+                      
+                      
+ 5- In Case Master-node and Worker-node in Same Machine "How Scheduler assigns pod in the node"      : through node-selector and pod toleration       
+ 
+ 6- why pod in pending state ?          : because of Scheduler not able determined node that operate on that "no ResrcS, limit Resrcs" Solution : Monitoring Tool
+ 
+ 
+ 
+  Some Definations:
+ 1- Pod : one OR More Containers that should be controlled as a single App
+ 2- Node: - Worker machine in K8S and may be Vm or Phy machine
+           - each node is managed by Control-plane "Master"
+           - have a multiple of pods 
+
+
+  3- Control-plane "Master" : handles Scheduling the pods across the nodes in Cluster
+
+ 4- Cluster: - Set of nodes that run containerized Apps
+             - Allow Containers to run across multiple machines and environments
+             - K8S Containers are not restricted "مربوطين" to specific OS  
+
+
+ 5- NameSpaces : way to organize / divded  cluster into Virtual Sub-Clusters
+
+ 6- Service : Logical Abstraction for deployed  group of pods in cluster
+              enable traffic distribution among specific Set of pods
+      Service types :
+              a- NodePort : Node علي مستوي (30000-32767)
+              b- LoadBalancer: expose service external through cloudProvider LB
+              c- ClusterIP : internal Communication         
+              D-ExternalName : Map service
+              
+             
+
+ 7- Deployment: - Workload that determine no.of replica of pods on system 
+                - Tell K8S how to create/ modify instances of pods that hold a containerized App
+                - can scale the number of replica pods
+                - enable rollout of update code in Controller manager or Rollback to earlier deployment version 
+  
+  8- Diff b/w Replicaset and Deployment :
+            >Deployment able to  make scaling , But Replicaset not able
+            
+  
+ 
+ 9- Volume: Applies to a whole pod and is mounted on all containers in pod
+    types : a-hostpath : mount on your host as path /
+            b- emptydir : on any path
+            c-pv"" : that need PVC
+            d- StorageClass : able to make pvc without make pv
+                       depends on Provisioner 
+
+ 
+10- main concepts in any <obj>.yaml
+     apiVersion: group
+     kind: type
+     metadata: some info
+       namespace :
+       name:
+ 
+ 11- minikube : tool that install k8s locally
+ 
+ 12- kubectl : Command line tool that able to make any command in k8s and deal with kube api_server in master
+
+
+ 13- how to display all available resrcs in system
+        > $ kubectl api-resources
+        
+ 14- ConfigMap : - way to represent Configs inside pods
+                 - pod and ConfigMap are existing in same NameSpace
+                 - key value store
+                 - mount in pod
+                 
+ 15- <--dry-run=client>      : check
+ 
+ 16- Secret : Like ConfigMap but store sensitive data "encoded"
+ 
+ 17-daemonset : create one pod per worker-node
+ 
+ 
+ 18- diff b/w Deployment and DaemonSet and Statefullset
+       > DaemonSet not support Scalaing Replica "UP/Down" but Deployment Support
+ 
+       > in <obj>.yaml
+          effects types: 
+               a- NoSchedule : make node as unSchedules
+               b- PreferNoSchedule :
+           restartPloicy Types:  a- Never   b-ONFailure   c-Always
+           backofflimit : specifies no.of retries the k8s should attempt when pod fails     
+           templete : shape of pod
+           completions : 10  repeated a 10 times
+           parallslim :  كل مرتين مع بعض وبيحصل ليهم استوب  
+           Liveness : used to determine if a container is alive or dead. If a container fails a liveness, K8s will kill the container and restart it as per the container's restart policy. 
+           Readiness : used to determine if a container is ready to accept traffic. If a container fails a readiness, K8s will remove the container from the service endpoints.
+           Startup : used to determine if a container has started up successfully. Startup are similar to readiness,
+                     but they are used specifically during the startup phase of a container. If a     container fails a startup, Kubernetes will kill the container and restart it.
+                    
+ 
+ 19-  Stateful and Stateless :
+            > Stateless applications do not store any persistent data within the application instance  but Stateful store
+                       
+
+ 20- init container in <pod/depl>.yaml      : firstly container initialized
+ 
+ 21- jobs and CronJob : 
+           job : a period time, killed
+           cronJob : Scheduled Tasks
+           
+ 22- Service Account, Role and RoleBinding:
+         ServiceAccount : rebot user  in cluster  "deployment can create another deployment"
+         Role : Permission that related to k8s Rescrs to make anything
+         Rolebinding : Link b/w ServiceAccount and Role
+         
+  23- Why make Service ? : pod not immutable obj when pod crashed"ip هيروح" ,even that make service and call pod through service
+                             
+  24- Ingress : - Way in k8s to serve service via http/https
+                - layer 7
+                - operates in ingress-class
+                - able to reach service through name-based virtual hosting
+                - Ingress Controller "IC" :Like proxy to resolve specific doamin to services              
+                    Ingress Controller types:
+                        a-Nginx IC  b-Traffic IC   c-apache IC
+                        
+ 25- Pv Properties:
+       a- AccessModes:  1- ReadWriteOnce  2- ReadOnlyMany  3- ReadWriteMany
+       b- Reclaim_Policy "if volume not make Reclaim"
+           1-Retain "Exist": manual reclaim   
+           2- Recycle : rm -rf </path>    
+           3-Delete : storage is deleted
+           
+26- Static pod : pod that managed with kubelet
+
+27- NetworkPolicy :  enforce network communication rules between pods.  
+
+
+                              #### IAC : Terraform ####
+                              
+ 1-IAC "Infra as a code" : Convert Infra as a Resrcs like vms, storage .. into code and push
+                          code in Github
+ 2-Why IAC : a- Idempotence"through tfstate"  b- consistent Configs c-speed d-Faster Recovery
+ 
+ 3-Terraform : Open Src tool for building infra, written by Go Lang , Hashicorp
+ 
+ 4-Diff between Cloudformation and Terraform ?
+   > language : cloudformation is IAC in AWS Provider using mainfest file like yaml or json but Terraform is Open Src tool Using Hashicorp
+   > platform : CloudFormation is specifically designed for managing AWS resources but open src tool that supports multiple cloud providers ((AWS, Azure,GCP ))           
+   
+   
+ 5-How Terraform Works  ?
+   > a- Terraform Core : binary files   b- Terraform plugins: through api
+   
+  
+ 6-How To Call AWS?
+     a- from console : username and pass
+     b- CLI : access-key and secret-key
+     c- sdk :  access-key and secret-key
+     
+     
+ 7-When Install awscli and make aws configure ?
+     by default existing credentials and configs in 
+      $ cd /home/mustafa/.aws/       $ ls
+      
+ Any Resrc in Terraform , the extension is : <Resrc-name>.tf
+ 
+
+8- Flow of Terraform ?
+   a- $ terraform init : init your Project
+   b- $ terraform plan : review changes and check
+   c- $ terraform apply : apply these resrcs
+   d- $ terraform destroy : destroy resrcs 
+   
+   
+ 9-When make $ terraform apply : that make tfstate ?
+ t fstate is statefile : التيرافورم هتعرف منين انك عايز تعدل او تعمل ديليت
+ 
+ 10- Conditions that make $ terraform init ?
+  a-  when make new provider or new plugins
+  b-  when make a module
+  c-  backend
+  
+ 11-why make Variable "variabels.tf"  ?
+   > to  prevent hardcoded , make code reusability that able to use code in any envirn
+   
+   variable "<alias-name>" {
+     type = <>  
+   }
+   
+  12-how many type a keywoard in varaibles.tf ?
+     > type = string      > type = number   > type = list()   > type = any "default"
+     > type = tuple [1, "2", "3"]      > type = set()      
+     > type = duplicated var [1, 1. ,2, 3]
+ 
+ 13-Ways to  apply variables ? 
+   a- as a command : $ terraform apply -var "vpc-cidr" = "10.0.0.0/16" > high perirorty
+   b-  terraform.auto.tfvars "Second high periorty but high security" ,key = value
+   c- terraform.tfvars like terraform.auto.tfvars    "third high periorty"
+   d-  as automated global like bash
+           $ export  TF_VAR_vpc-cidr = "10.0.0.0/16"   > "LOW Periroty"
+           
+ 1. How to remove a single resource from terraform state file without using destroy?
+    > terraform state rm my_resource
+    OR
+    > Open the Terraform configration file . Locate the resource block that you want to remove and delete it from the file , then apply        
+           
+  14-Output "output.tf" ?
+    >> to echo ouput on screen     and attach vars to Config-MGM Tool like Ansible
+    
+    output.tf 
+    
+    output "s3_arn" {
+        value = 
+        description = 
+    
+    }                
+    
+ 15-attribute refrence ? 
+    >> like make ec2
+    
+ dependency ?  resrc depends on another resrc     >> terraform depends on statefile
+ 
+ 16-remote state : to store sensitive data of terraform.tfstate to push on GitHub "shared"
+ 
+ terraform.tfstate  "statefile : not shoud to edit manually in tfstate"
+      tfstate >>  track of your Resrcs in terraform
+      
+      
+ vpc.tf
+ 
+ resource "aws_vpc" "vpc-iti" {
+     cidr_block = var.vpc-cidr
+     lifecycle {
+     
+     }
+     
+     tags = {
+       
+       Name = "anubis-vpc"
+     }
+ 
+ 
+ }     
+     
+  types of lifecycle ?
+     a- lifecycle {
+           create_before_destroy = true/false 
+     }
+      
+     b- lifecycle {
+           prevent_destroy = true/false 
+     }
+     
+     c- lifecycle {
+           ignore_changes = [
+              tags,
+           
+           ] 
+     } 
+   
+   
+ count in any Resrc ?
+            
+  resource "aws_vpc" "vpc-iti" {
+     cidr_block = var.vpc-cidr
+     count = 3
+     lifecycle {
+     
+     }
+     
+     tags = {
+       
+       Name = "anubis-vpc"
+     }
+ 
+ 
+ }             
+   count "problems ": overwrite and depends on index-based 
+   for each : solve these problems
+          >> create no of Resrcs as Map style    key = value
+             
+ 
+ types of dependency of refers 
+  1- ref attribute :  make output of Resrc-1 as Input of Resrc-2
+  2- direct depend : make depends_on of resrc to another resrc  
+   
+   
+ input variable > key value pair used as a parameters to input values at run time to enable reusability to our code
+ 
+ modules : Orgainized Way    
+     module "ec2-cluster" {
+     
+     
+     
+     }
+     
+ Best way to put aws access-key and secret-key ?
+ $ providers.tf
+ 
+ provider "aws" {
+
+  shared_config_files = ["~/.aws/config"]
+  shared_credentials_files = ["~/.aws/credentials"]
+  profile                  = "default"
+
+}
+
+ state loc file > file that has a key , through key you can make apply and put in backend
+
+
+ 
+                                         #### AWS ####
+                                         
+ EC2 : Virtual machine
+   > types of EC2 through Pricing model:
+         > on-Demand : very flexaible EC2- Pay as you go
+         > Spot Reqs : Cheaper EC2 Pricing, (1:6 h) ممكن تقفل
+         > Reserved: Book EC2 "1 : 3 years"  
+         > Saving plans: Savings Plans offer flexibility similar to Reserved Instances but provide savings across any instance
+                         family, region, or instance size over (1:3 years)
+         
+         
+         > Dedicated-host: "very expensive" Dedicated Hosts allow you to run instances on physical servers
+                                                
+                                         
+     > types of type-instance : through Family  (t2 - t3 - c4 -c5 - c5a - c5ad - c5d - c5n - c6a)
+                                   Family : Compute Optimized - Memeory Optimized - Storage Optimized
+     
+ Fault-tolerance : the ability of a system or application to continue operating in the event of a component failure 
+                                         
+ VPC  "Virtual Private Network" : Network
+   > make a cidr   - Subnet - 
+   
+ S3-Bucket "Simple Storage Service" > data store 1- Object : file / dir          2- BLock  
+        S3 Types "Classes" :
+            1- standard "default"
+            2- Inteligent Tiering
+            3- Standard IA "Infreqent Access"
+            4- Glacier - Galcier Deep Archive
+            5- One Zone
+            
+        Bucket Versioning : enable / disable version of your Bucket
+        
+  
+ Diff B/w SecurityGroup and NACL "Netw-ACL"  ?
+  > SGs Operates at the instance level but NACL Operates at the subnet level ,
+  > SGs is Stateful: When you allow inbound traffic into an instance via a sg rule,outbound traffic is automatically allowed.
+  > NACL is Stateless: Unlike sg, NACLs require separate rules for inbound and outbound traffic .
+  
+ Diff B/W public-subnet and Private-subnet ? 
+       By default  to create subnet "private" for making Public-subnet attach with IGW 
+       Public subnets have a route table configured to send internet-bound traffic to the internet gateway
+       Private subnets have a route table configured to send internet-bound traffic to the NAT gateway or instance.
+        
+ How can application access internet without received requests from internet?
+     >> able to create Proxy-server that put on NAT
+     
+ Diff B/W S3, EBS and EFS ?
+   > S3 Can Store Object and Block but not able to attach with EC2 , EBS "Elastic Block Store" is a volume-block can attach with EC2
+          and EFS "Elastic File system" : FS able to attach with EC2 form Any AZ and Support NFS
+          
+ IGW : A gateway that you attach to your VPC to enable communication between resources in your VPC and the internet.
+ NGW : allow connection between a private EC2 and the Internet
+ Route table : A set of rules, called routes, that are used to determine where network traffic is directed
+ 
+ " Route-Table "RT" : Subent " >  " 1:1 " but  can make more than one rule in RT
+ 
+ Egress-only internet gateways : Type of IGW but operates on ipv6
+ 
+ Bastion host "Jump-host" : Public ec2 can make ssh to private ec2
+ 
+ Common roles:
+   1- EC2 Instance Role  2-Lambda Func Role  3- Roles for CloudFormation
+   
+types of RDS "Relational Database" :
+   1- Oracle 2- Aurora "AWS" 3- MySql 4-Sql-server  5- Postgress
+   
+Lambda Func : is a Runnable code to Mange AWS Services like "terminate EC2"
+
+Auto Scaling Group : Ensure we have a minimum and a maximum number of machines running
+  > Types :
+            Scale out (add EC2 instances) to match an increased load
+            Scale in (remove EC2 instances) to match a decreased load
+            
+What are the types of Load Balancers?
+  1-  Application Load Balancer (HTTP / HTTPS only) – Layer 7
+  2-  Network Load Balancer (ultra-high performance, allows for TCP) – Layer 4
+  3 - Classic Load Balancer (slowly retiring) – Layer 4 & 7            
+   
+ vpc peering : Connect two VPC, privately using AWS’ network         
+
+
+
+
+                                         #### Ansible ####
+  
+ Ansible is a Config MGM Tool and Provisioning   "Control-node and Managed-Nodes"
+ Features of Ansible :
+   1- No-Agent    2- Idempotency 3- Tiny curve to learn  4- No Procdeural"setp of step"   5-Decalartive "Final-state by playbook"
+   
+ Playbook : Yaml file  contains tasks that executed
+ 
+      tasks :
+      install <package>
+      service:
+      modules
+      command
+
+ Inventory : set of hosts > default loc is  /etc/ansible/hosts   alternative Inventory Loc : /etc/ansible/ansible.cfg
+ 
+ Ansible Role : Organize Ansible Code in modules
+ 
+ Ansible Vault : It provides a secure way to encrypt sensitive data such as passwords, API key
+ 
+ Ansible Playbook Run Options ?
+  1- dry on "check"  2- start at    3- Tags "Optional"
+  
+ Ansible Facts : Facts are variables that Represent Info about system being managed 
+       $ ansible <target_host> -m setup
+       
+ Gathering Fact : governed by a setting in /etc/ansible/ansible.cfg
+                               gathering = implicit
+                               
+                               
+ Ansible Config file  has a multi section            /etc/ansible/ansible.cfg
+ 
+  [defaults]
+  
+  [Inventory]
+  
+  [Privillege_escalation]        >  process of elevating the privileges of a playbook or a task to perform actions that require
+                                          higher privileges than those initially granted
+  
+  [ssh_connection] 
+                          
+  ssh timeout
+        > timeout : 10
+        > forks : 5 no.of parallel processes
+        
+        
+    
+     
+ 
+                                                #### Prometheus ####
+                                                
+PromQL: Language that take a Queries Like : SQL-MongoDB
+
+How do We Accomplish Obervability ? 
+ a- Logs OR Logging : Records of events that have occured
+       > logs are comprised of :
+            1- Timestamp : describe of events
+            2- Message Containing Info : Records  Events of  my App "type : get, post"
+ b- Traces : allows you to follow your Operations "Microservices"
+                 > each Trace has a trace-id
+                 > each span "event" tracks that Following :
+                   1- StartTime b- Duration "Determine performance" c-parent-id
+                   
+ c- Metrics : Numerical Values of your System Cpu Load- no.of open files - no.of errors
+ 
+ Prometheus : monitioring tool that is resposible of Collecting Mertics
+                 >>  depends on key-value pair "labels"
+              
+ Grafana : Monitoring UI,
+ 
+ Metrics  Arch :
+  1- Help : Description of what Metrics are ?
+  2- Type :
+         a- Counter : No.of Events
+         b- Guage : Actual  value state 
+         c- Histogram : history and how long
+         
+ Why Prometheus ?
+ 1- PromQL 2- Pull model 3- Visualization : graphs and dashboard 4- Multi diemensional data model : identified by metric name, key
+                                                                                                                  value store
+ 
+ Diff b/w Pull-based an Push-based ?
+ > Pull-based "Proemtheus" : not need agent 
+                             - Montoring system send a http reqs to App and App give data
+                             - monitoring system ask App of Status
+ > Push-based"CloudWatch" : App has function that send data"
+                            - If App fails  مش هاخد بالي
+                            - Prometheus Monitor  self
+                            - Usecase : CronJob
+                            
+                            
+ Prometheus Arch :
+ 1- Promethues Server : exist in that Metrics , deal with alert manager
+ 2- Retrival "Worker" : Pull metrcis from server and send it time-series 
+ 3- Time series "database" : store metrics on local/remote - data is sensitive ,  deal with Retrival "Worker"
+ 4- HTTP-Server GUI : Accept Queries and Write Metrics that  will need, Take Data from Time-series, Deal with Grafana through PromQL
+ 
+ 5- Alert-manger : Responsible  of any state will happen, 
+                   - Send alerts on Slack MSG :  Determine Rule that will make when Cpu-load reach 90% Or Over
+                   
+ 6- Node-Exporter : Collect Diff Metrics "Targets" and Give to Retrival
+ 
+ 7-App make Push on Push-G.W "service" and Retrival Pull data form Push-G.W   
+ 
+ 
+ Prometheus Rule-file Written by Manifest-file <yaml>
+ 
+ 
+                                                  #### Git ####
+                                                  
+ Diff B/W rebase and merge ?
+   > rebase : rewrites of commit history         > merge : merge of final commit
+                                                                            
+ Diff Clone and Pull ?
+  > clone download           > pull : updates only
+  
+ Diff stash and squash
+  > stash : save changes in Temporary area without commiting them
+  > squash : combine Multiple Commits in a single commit
+
+.gitignore : ignore files that have sensitive data and not push on Github
+    
+ Process : is an instance of program that is executing on your host
+ thread : lightweight unit  of execution within a process
+ 
+ 
+ MultiThreading : technique that allows multiple-threads to execute concurrently within a single process
+         >> primary-objective : improve utalization of system ReSRCs
+         >> benfits : 1- Improved Performance  2- ReSRC Sharing 3- Modularity
+         
+         
+  Apache server with code 200 but gives you a blank page "Reasons"
+  
+       > Reasons : 1- Empty Response 2- Error handling 3-  content encoding issues
+       > Troubleshooting: 1- Checks server logs 2- Test html page 3- Disable Caching
+       
+ Fetch : retrives changes from remote to local and not make a merge
+ pull : combines the fetch and merge Operations
+ 
+ 
+
+       
+                             ##### Linux ########
+                             
+
+
+1- How to display information about the currently running processes?
+   
+   > ps command
+   
+
+2-How can you create a new user account in Linux?
+   > useradd
+   
+   
+3-What are permissions in Linux, and what do the permission bits represent?
+  >Linux uses three permission bits for each file: read (r), write (w), and execute (x). These permissions apply to three different user groups: owner, group, and others.
+  
+
+4- How to securely copy files between a local host and a remote host over SSH ?
+   > use scp command
+   
+5- How do you check system resource utilization in Linux?
+   >The free command shows system memory usage, including total, used, free, and cached memory.
+   
+6- How do you manage services in Linux ?
+   > systemctl is used to start, stop, restart, enable, disable, and check the status of system services. For example, systemctl start service-name
+   
+7- Explain the difference between hard links and symbolic links.
+   > Hard links : directly reference the same data(Inode-Index node) as the original file
+   > symbolic links : separate files that act as pointers to the target file or directory. 
+ 
+8- Some Commands ?
+   > change permission : chmod command
+   > change owner : chown
+   > change group : chgrp
+ 
+ 
+9- speack about file system ?
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ #####################################################################################################################################################################################
+ 
+ 
+ how to delete  commit from remote repo ? 
+  > git reset --hard HEAD~1 "locally"
+  > git revert <commit_id>  "remote"
+  
+  
+ if you have problem in docker container how troubleshoot issue ? 
+  > docker ps     "status"
+  > docker start <container-id> "make command if not running"
+  > docker logs <container_id>    "logs and make -f "flag""
+  > docker exec -it <container_id>  "inside in container "
+  > docker stats <container_id>       "ReSRC Usage"
+  
+  
+ How to debug slow server when user access it ? 
+   a- Monitor server resources  b- Analyze server logs  c- Check network connectivity  d- Review database performance f- Server configuration review
+   
+ Linux command to see cpu, ram memory in my server ? 
+   > cat /proc/cpuinfo          cat /proc/meminfo            OR
+    > top                > htop   
+    
+ How to prevent group of devoper to push code directly on master branch ?
+   > from settting implement branch protection rules. Branch protection rules restrict who can push or merge changes to specific branches
+   
+  Shared library in Jenkins? 
+   > collection of groovy scripts shared b/w jenkins jobs : more jenkins file run in more pipeline
+                                         
+ App consist of backend w front end and database, what is service type for them in k8s ?
+  > Clusterip on DB      > front and back : NodePort
+  
+ Network policies in kubernetes? 
+   > NetworkPolicy : used to define and enforce network traffic rules within the cluster
+  > 1- Network Policy API  2- Pod selectors  3- Ingress and egress rules   4- Rule specifications "ip"
+                                      
+ Copy file form server to another server ? 
+   > 1- SCP      2- rsync     3- tftp "put and get"
+   
+  عندي container عليه app ف ال container دا بيتعمله exit ، ف ازاي اقدر اجيب ال logs هل فيه حاجة بعملها من و انا بعمل build
+   >> docker volume mapping
+   
+   Controller manager types ?
+    > Node Controller: display Healthcheck of node
+         -  Deployment Controller   - ReplicaController    - SA Controller     - Token Controller
+    
+     Cloud watch VS cloud trail ?
+      >  Cloudwatch : monitor services
+      > cloudtrail : watch logs of api activity   "who user make on services"
+      
+      
+
+                         
+   
+                               
+                                                                     
+                           
+          
+ 
